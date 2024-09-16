@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-require "bundler/setup"
-require "tasks_cli"
+require 'bundler/setup'
+require 'tasks_cli'
 
 TasksCLI::CLI.start(ARGV)

@@ -1,8 +1,10 @@
-require "tasks_cli/version"
-require "tasks_cli/cli"
-require "tasks_cli/task"
-require "tasks_cli/task_manager"
-require "logger"
+# frozen_string_literal: true
+
+require 'tasks_cli/version'
+require 'tasks_cli/cli'
+require 'tasks_cli/task'
+require 'tasks_cli/task_manager'
+require 'logger'
 
 module TasksCLI
   class Error < StandardError; end
@@ -37,9 +39,8 @@ module TasksCLI
 
   # Logging
   def self.logger
-    @logger ||= Logger.new(STDOUT).tap do |log|
+    @logger ||= Logger.new($stdout).tap do |log|
       log.progname = 'TasksCLI'
     end
   end
 end
-```

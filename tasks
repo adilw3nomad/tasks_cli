@@ -23,13 +23,24 @@ class Task
     @updated_at = extract_value(row[8]) || Time.now.iso8601
   end
 
+  def status_color
+    case @status.downcase
+    when 'to do' then :red
+    when 'in progress' then :yellow
+    when 'done' then :green
+    else :white
+    end
+  end
+  
+  
+
   def extract_value(field)
     return field if field.is_a?(String)
     field.is_a?(Array) ? field[1].to_s.strip : field.to_s.strip
   end
 
   def to_s
-    "#{Rainbow(@number).cyan}: #{Rainbow(@name).bright} (#{status_colored}) - Priority: #{priority_colored} - Updated: #{@updated_at}"
+    "#{Rainbow(@number).cyan}: #{Rainbow(@name).bright} (#{status_color}) - Priority: #{priority_colored} - Updated: #{@updated_at}"
   end
 
   def detailed_view
@@ -39,7 +50,7 @@ class Task
       #{Rainbow("Name:").bright} #{Rainbow(@name).bright}
       #{Rainbow("Description:").bright} #{@description}
       #{Rainbow("Priority:").bright} #{priority_colored}
-      #{Rainbow("Status:").bright} #{status_colored}
+      #{Rainbow("Status:").bright} #{status_color}
       #{Rainbow("Relates To:").bright} #{@relates_to}
       #{Rainbow("Blocked By:").bright} #{@blocked_by}
       #{Rainbow("Last Updated:").bright} #{@updated_at}
@@ -60,7 +71,7 @@ class Task
     @updated_at = Time.now.iso8601
   end
 
-  def status_colored
+  def status_color
     case @status.downcase
     when 'to do' then Rainbow(@status).red
     when 'in progress' then Rainbow(@status).yellow
@@ -88,7 +99,7 @@ class TaskManager
   def load_tasks
     @tasks = []
     CSV.foreach(@file_path, headers: false) do |row|
-      next if row == ["Epic Name", "Ticket Number", "Ticket Name", "Ticket Description", "Priority", "Status", "Relates To", "Blocked By"]
+      next if row == ["Epic Name", "Ticket Number", "Ticket Name", "Ticket Description", "Priority", "Status", "Relates To", "Blocked By", "Updated At"]
       begin
         parsed_row = row.map do |field|
           parse_field(field)
@@ -108,7 +119,7 @@ class TaskManager
   end
 
   def parse_field(field)
-    return field unless field.start_with?('[') && field.end_with?(']')
+    return field if field.nil? || !(field.start_with?('[') && field.end_with?(']'))
     parsed = JSON.parse(field.gsub('=>', ':'))
     [parsed[0], parsed[1]]
   rescue JSON::ParserError
@@ -185,7 +196,7 @@ def print_tasks(tasks)
     puts "%-10s %-30s %-15s %-10s %-25s" % [
       Rainbow(task.number).cyan,
       Rainbow(task.name.to_s.truncate(30)).magenta,
-      task.status_colored,
+      task.status_color,
       task.priority_colored,
       Rainbow(task.updated_at).blue
     ]

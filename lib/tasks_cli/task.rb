@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 require 'rainbow'
 
 module TasksCLI
   class Task
     attr_reader :epic, :number, :name, :description, :priority, :status, :relates_to, :blocked_by, :updated_at
-    
+
     def initialize(row)
       @epic = extract_value(row[0])
       @number = extract_value(row[1])
@@ -17,25 +19,27 @@ module TasksCLI
     end
 
     def extract_value(field)
+      return '' if field.nil?
       return field if field.is_a?(String)
+
       field.is_a?(Array) ? field[1].to_s.strip : field.to_s.strip
     end
 
     def to_s
-      "#{Rainbow(@number).cyan}: #{Rainbow(@name).bright} (#{status_colored}) - Priority: #{priority_colored} - Updated: #{@updated_at}"
+      "#{Rainbow(@number).cyan}: #{Rainbow(@name).bright} (#{status_color}) - Priority: #{priority_colored} - Updated: #{@updated_at}"
     end
 
     def detailed_view
       <<~TASK
-        #{Rainbow("Epic:").bright} #{@epic}
-        #{Rainbow("Number:").bright} #{Rainbow(@number).cyan}
-        #{Rainbow("Name:").bright} #{Rainbow(@name).bright}
-        #{Rainbow("Description:").bright} #{@description}
-        #{Rainbow("Priority:").bright} #{priority_colored}
-        #{Rainbow("Status:").bright} #{status_colored}
-        #{Rainbow("Relates To:").bright} #{@relates_to}
-        #{Rainbow("Blocked By:").bright} #{@blocked_by}
-        #{Rainbow("Last Updated:").bright} #{@updated_at}
+        #{Rainbow('Epic:').bright} #{@epic}
+        #{Rainbow('Number:').bright} #{Rainbow(@number).cyan}
+        #{Rainbow('Name:').bright} #{Rainbow(@name).bright}
+        #{Rainbow('Description:').bright} #{@description}
+        #{Rainbow('Priority:').bright} #{priority_colored}
+        #{Rainbow('Status:').bright} #{status_color}
+        #{Rainbow('Relates To:').bright} #{@relates_to}
+        #{Rainbow('Blocked By:').bright} #{@blocked_by}
+        #{Rainbow('Last Updated:').bright} #{@updated_at}
       TASK
     end
 
@@ -53,7 +57,7 @@ module TasksCLI
       @updated_at = Time.now.iso8601
     end
 
-    def status_colored
+    def status_color
       case @status.downcase
       when 'to do' then Rainbow(@status).red
       when 'in progress' then Rainbow(@status).yellow

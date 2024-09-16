@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module TasksCLI
-  VERSION = "0.1.0"  # or whatever version you're using
+  VERSION = '0.1.1'
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'csv'
 require 'json'
 require 'rainbow'
@@ -12,11 +14,13 @@ module TasksCLI
     def load_tasks
       @tasks = []
       CSV.foreach(@file_path, headers: false) do |row|
-        next if row == ["Epic Name", "Ticket Number", "Ticket Name", "Ticket Description", "Priority", "Status", "Relates To", "Blocked By"]
+        next if row == ['Epic Name', 'Ticket Number', 'Ticket Name', 'Ticket Description', 'Priority', 'Status',
+                        'Relates To', 'Blocked By']
+
         begin
           parsed_row = row.map { |field| parse_field(field) }
           @tasks << Task.new(parsed_row)
-        rescue => e
+        rescue StandardError => e
           puts "Error processing row: #{row.inspect}"
           puts "Error message: #{e.message}"
         end
@@ -24,13 +28,14 @@ module TasksCLI
     rescue CSV::MalformedCSVError => e
       puts Rainbow("Error reading CSV: #{e.message}. Trying to parse with alternative method...").red
       parse_csv_manually
-    rescue => e
+    rescue StandardError => e
       puts Rainbow("Unexpected error while loading tasks: #{e.message}").red
       puts e.backtrace
     end
 
     def parse_field(field)
-      return field unless field.start_with?('[') && field.end_with?(']')
+      return field if field.nil? || !(field.start_with?('[') && field.end_with?(']'))
+
       parsed = JSON.parse(field.gsub('=>', ':'))
       [parsed[0], parsed[1]]
     rescue JSON::ParserError
@@ -40,11 +45,11 @@ module TasksCLI
     def parse_csv_manually
       @tasks = []
       lines = File.readlines(@file_path)
-      lines[1..-1].each do |line|
+      lines[1..].each do |line|
         fields = line.strip.split(',')
         parsed_fields = fields.map { |field| parse_field(field) }
         @tasks << Task.new(parsed_fields)
-      rescue => e
+      rescue StandardError => e
         puts "Error processing line: #{line}"
         puts "Error message: #{e.message}"
       end
@@ -54,7 +59,7 @@ module TasksCLI
       lines = File.readlines(@file_path)
       File.open(@file_path, 'w') do |file|
         file.puts lines[0].chomp  # Write header as is
-        lines[1..-1].each do |line|
+        lines[1..].each do |line|
           fields = line.strip.split(',').map { |f| parse_field(f) }
           if fields[1][1] == task_number
             task = find_task(task_number)
@@ -68,7 +73,7 @@ module TasksCLI
     end
 
     def all_tasks
-      @tasks
+      @tasks[1..]
     end
 
     def filter_tasks(criteria)
@@ -93,7 +98,7 @@ module TasksCLI
         puts Rainbow("Last updated: #{TasksCLI.format_date(task.updated_at)}").cyan
       else
         TasksCLI.logger.warn("Task not found: #{number}")
-        puts Rainbow("Task not found").red
+        puts Rainbow('Task not found').red
       end
     end
   end
