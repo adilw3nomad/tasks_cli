@@ -2,6 +2,19 @@
 
 TasksCLI is a command-line interface tool for managing tasks stored in a CSV file. It allows you to list, filter, view, and update tasks efficiently from your terminal.
 
+
+## Features
+
+- List all tasks
+- Filter tasks by field and value
+- View detailed information for a specific task
+- Update task status
+- Colorful output for better readability
+
+![TasksCLI Example](example.png)
+
+
+
 ## Installation
 
 Install the gem by running:
