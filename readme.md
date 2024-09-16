@@ -41,14 +41,18 @@ The CSV file should have the following columns:
 8. Blocked By [Array]
 9. Updated At (optional)
 
-Example:
-
 ```
 Epic Name,Ticket Number,Ticket Name,Ticket Description,Priority,Status,Relates To,Blocked By,Updated At
 Epic 1,1,Task 1,Description 1,High,To Do,,,
 Epic 1,2,Task 2,Description 2,Medium,In Progress,,,
 Epic 1,3,Task 3,Description 3,Low,Done,,,
 ```
+
+What I find best is to use the following process;
+1. Loosely define the project with an LLM of your choice. 
+2. Ask LLM to generate a list of tasks for the project.
+3. Iterate on the LLM generated tasks until you are satisfied.
+4. Ask LLM to generate the CSV of the tasks using the above format. 
 
 ## Usage
 
