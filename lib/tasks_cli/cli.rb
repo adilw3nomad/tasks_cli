@@ -12,12 +12,23 @@ module TasksCLI
       print_tasks(manager.all_tasks)
     end
 
-    desc 'filter FIELD:VALUE', 'Filter tasks by field and value'
-    def filter(filter_string)
+    desc 'filter FIELD:VALUE [FIELD:VALUE ...]',
+         'Filter tasks by one or more field:value pairs. Example: filter status:in_progress priority:high'
+    def filter(*args)
+      criteria = {}
+      args.flatten.each do |arg|
+        field, value = arg.split(':', 2)
+        criteria[field.to_sym] ||= []
+        criteria[field.to_sym] << value
+      end
       manager = TaskManager.new
-      key, value = filter_string.split(':')
-      filtered_tasks = manager.filter_tasks({ key => value })
-      print_tasks(filtered_tasks)
+      filtered_tasks = manager.filter_tasks(criteria)
+      if filtered_tasks.empty?
+        puts Rainbow('No tasks found matching the given criteria.').yellow
+      else
+        print_tasks(filtered_tasks)
+        puts "\nFiltered tasks: #{Rainbow(filtered_tasks.count).green}"
+      end
     end
 
     desc 'view NUMBER', 'View details of a specific task'

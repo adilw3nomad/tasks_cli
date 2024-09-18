@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    tasks_cli (0.1.2)
+    tasks_cli (0.1.3)
       csv (~> 3.0)
       logger (~> 1.5)
       ostruct (~> 0.3.0)

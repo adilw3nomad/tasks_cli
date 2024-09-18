@@ -78,7 +78,9 @@ module TasksCLI
 
     def filter_tasks(criteria)
       @tasks.select do |task|
-        criteria.all? { |field, value| task.matches?(field, value) }
+        criteria.all? do |field, values|
+          values.any? { |value| task.matches?(field, value) }
+        end
       end
     end
 
